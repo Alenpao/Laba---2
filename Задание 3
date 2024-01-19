@@ -1,0 +1,85 @@
+using System;
+
+public class Date
+{
+    private int day;
+    private int month;
+    private int year;
+
+    public Date(int day, int month, int year)
+    {
+        this.day = day;
+        this.month = month;
+        this.year = year;
+    }
+
+    // Перегрузка оператора + для добавления дней
+    public static Date operator +(Date date, int days)
+    {
+        return date.AddDays(days);
+    }
+
+    // Перегрузка оператора - для вычитания дней
+    public static Date operator -(Date date, int days)
+    {
+        return date.AddDays(-days);
+    }
+
+    // Перегрузка оператора == для сравнения объектов даты
+    public static bool operator ==(Date date1, Date date2)
+    {
+        if (ReferenceEquals(date1, null) && ReferenceEquals(date2, null))
+            return true;
+        if (ReferenceEquals(date1, null) || ReferenceEquals(date2, null))
+            return false;
+        return date1.Equals(date2);
+    }
+
+    // Перегрузка оператора != для сравнения объектов даты
+    public static bool operator !=(Date date1, Date date2)
+    {
+        return !(date1 == date2);
+    }
+
+    // Метод для добавления дней
+    public Date AddDays(int days)
+    {
+        DateTime dateTime = new DateTime(year, month, day);
+        DateTime newDateTime = dateTime.AddDays(days);
+        return new Date(newDateTime.Day, newDateTime.Month, newDateTime.Year);
+    }
+
+    // Метод для вывода даты в формате "день.месяц.год"
+    public string ToShortString()
+    {
+        return $"{day}.{month}.{year}";
+    }
+
+    // Метод для вывода даты в формате "день месяц год"
+    public string ToLongString()
+    {
+        return $"{day} {GetMonthName(month)} {year}";
+    }
+
+    // Получение названия месяца по его номеру
+    private string GetMonthName(int month)
+    {
+        return DateTimeFormatInfo.CurrentInfo.GetMonthName(month);
+    }
+
+    // Переопределение метода Equals для сравнения объектов даты
+    public override bool Equals(object obj)
+    {
+        if (obj == null || GetType() != obj.GetType())
+            return false;
+
+        Date other = (Date)obj;
+        return day == other.day && month == other.month && year == other.year;
+    }
+
+    // Переопределение метода GetHashCode
+    public override int GetHashCode()
+    {
+        return day ^ month ^ year;
+    }
+}
