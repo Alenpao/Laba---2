@@ -1,0 +1,61 @@
+using System;
+using System.Collections.Generic;
+using System.Xml;
+
+public static class XmlParser
+{
+    public static Order ParseOrder(string xml)
+    {
+        XmlDocument xmlDoc = new XmlDocument();
+        xmlDoc.LoadXml(xml);
+
+        XmlNode orderNode = xmlDoc.SelectSingleNode("Order");
+        string orderId = orderNode.Attributes["id"].Value;
+
+        Order order = new Order(orderId);
+
+        XmlNodeList itemNodes = xmlDoc.SelectNodes("Order/Items/Item");
+        foreach (XmlNode itemNode in itemNodes)
+        {
+            string itemId = itemNode.Attributes["id"].Value;
+            string itemName = itemNode.SelectSingleNode("Name").InnerText;
+            decimal itemPrice = decimal.Parse(itemNode.SelectSingleNode("Price").InnerText);
+
+            Item item = new Item(itemId, itemName, itemPrice);
+            order.AddItem(item);
+        }
+
+        return order;
+    }
+}
+
+public class Order
+{
+    public string OrderId { get; private set; }
+    public List<Item> Items { get; private set; }
+
+    public Order(string orderId)
+    {
+        OrderId = orderId;
+        Items = new List<Item>();
+    }
+
+    public void AddItem(Item item)
+    {
+        Items.Add(item);
+    }
+}
+
+public class Item
+{
+    public string ItemId { get; private set; }
+    public string Name { get; private set; }
+    public decimal Price { get; private set; }
+
+    public Item(string itemId, string name, decimal price)
+    {
+        ItemId = itemId;
+        Name = name;
+        Price = price;
+    }
+}
